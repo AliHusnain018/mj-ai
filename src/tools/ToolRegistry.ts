@@ -6,6 +6,67 @@ import { ToolDefinition } from '../types/assistant';
 
 export const TOOL_DEFINITIONS: ToolDefinition[] = [
   {
+    name: 'browserControl',
+    description:
+      'Directly controls the user active browser tab and websites (such as YouTube, GitHub, Google, Wikipedia). Supports opening sites, searching, clicking videos/channels/buttons/links, scrolling up/down/top/bottom, navigating back/forward/reload, and media playback control.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        action: {
+          type: 'STRING',
+          enum: [
+            'OPEN_URL',
+            'CLICK_ELEMENT',
+            'SCROLL',
+            'TYPE_TEXT',
+            'PLAY_MEDIA',
+            'PAUSE_MEDIA',
+            'SEEK_MEDIA',
+            'GO_BACK',
+            'GO_FORWARD',
+            'RELOAD',
+            'INSPECT_PAGE',
+          ],
+          description: 'The specific browser action to perform on the active page.',
+        },
+        targetDescription: {
+          type: 'STRING',
+          description:
+            'Natural language description of the target element to click or interact with (e.g. "first Python lecture", "FreeCodeCamp channel", "subscribe button", "third video", "that channel").',
+        },
+        url: {
+          type: 'STRING',
+          description: 'URL to open or navigate to (e.g. https://www.youtube.com).',
+        },
+        text: {
+          type: 'STRING',
+          description: 'Text or search query to type into the active search box or input field.',
+        },
+        direction: {
+          type: 'STRING',
+          enum: ['up', 'down', 'top', 'bottom'],
+          description: 'Direction to scroll.',
+        },
+        scrollAmount: {
+          type: 'STRING',
+          enum: ['small', 'medium', 'large'],
+          description: 'Amount to scroll (small = ~300px, medium = ~700px, large = ~1500px).',
+        },
+        mediaAction: {
+          type: 'STRING',
+          enum: ['play', 'pause', 'toggle', 'seek_forward', 'seek_backward', 'mute', 'unmute'],
+          description: 'Media control action for active video or audio players.',
+        },
+        seconds: {
+          type: 'NUMBER',
+          description: 'Number of seconds to seek forward or backward.',
+        },
+      },
+      required: ['action'],
+    },
+    permissionLevel: 'safe',
+  },
+  {
     name: 'openWebsite',
     description: 'Safely opens a website or popular service in the user browser, such as YouTube, GitHub, Google, Gmail, Wikipedia, ChatGPT, etc.',
     parameters: {

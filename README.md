@@ -124,11 +124,62 @@ npm run build
 npm start
 ```
 
-### 5. Typecheck & Linting
+### 5. Typecheck, Extension Bundling & Tests
 
 ```bash
+# Build Chrome Extension MV3
+npm run build:extension
+
+# Run automated tests
+npm test
+
+# Typecheck
 npm run lint
 ```
+
+---
+
+## 🌐 Live Browser & Website Control (Chrome Extension MV3)
+
+MJ includes a dedicated **Chrome Extension Manifest V3 Browser Control Bridge** that enables continuous voice-controlled browsing on active tabs without requiring mouse interaction:
+
+### Architecture
+```text
+                     MJ VOICE APP
+                          │
+                   Gemini Live API
+                          │
+                     Tool Calls
+                          │
+                BrowserControlManager
+                          │
+                   Extension Bridge
+                          │
+              Chrome Extension MV3
+                   (Background)
+                          │
+                   Content Scripts
+                          │
+                 Active Web Page DOM
+```
+
+### Installation in Google Chrome
+1. Build the extension: `npm run build:extension`
+2. Open Google Chrome and navigate to `chrome://extensions`
+3. Toggle on **Developer mode** in the top right corner
+4. Click **Load unpacked** in the top left corner
+5. Select the `extension/` directory from this project
+6. Open the MJ Web App (`http://localhost:3000`). The header will display `Browser: Active`!
+
+### Continuous Voice Commands
+- *"MJ, YouTube kholo"* → Opens YouTube in active window.
+- *"Python complete course search karo"* → Types search query and loads video results.
+- *"Pehli video kholo"* / *"First lecture play karo"* → Resolves and clicks the first lecture video.
+- *"Iska channel kholo"* → Resolves the channel from contextual target memory and opens channel page.
+- *"Neeche scroll karo"* / *"Aur neeche"* → Smoothly scrolls the active viewport down.
+- *"Top pe jao"* / *"Bottom pe jao"* → Jumps to top or bottom of the page.
+- *"Back jao"* / *"Forward jao"* → Navigates browser history backward or forward.
+- *"Pause"* / *"Play"* / *"10 second aage karo"* → Controls HTML5 video media playback.
 
 ---
 

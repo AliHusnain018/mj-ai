@@ -6,6 +6,7 @@
 import { MemoryManager } from '../memory/MemoryManager';
 import { PermissionLevel, ToolCallRequest, ToolCallResult } from '../types/assistant';
 import { TOOL_DEFINITIONS } from './ToolRegistry';
+import { BrowserControlManager } from '../browser/BrowserControlManager';
 
 export type PermissionRequester = (request: ToolCallRequest) => Promise<boolean>;
 
@@ -117,6 +118,10 @@ export class ToolManager {
           result = await this.handleSystemAction(args);
           break;
 
+        case 'browserControl':
+          result = await this.handleBrowserControl(args);
+          break;
+
         default:
           result = { error: `Tool ${name} is not recognized.` };
       }
@@ -174,6 +179,23 @@ export class ToolManager {
         ? `Successfully opened ${label}.`
         : `Requested to open ${label} at ${url}. Please allow popups if blocked.`,
     };
+  }
+
+  private async handleBrowserControl(args: any) {
+    if (!args || !args.action) {
+      throw new Error('Action parameter is required for browser control.');
+    }
+    const browserControl = BrowserControlManager.getInstance();
+    const result = await browserControl.handleBrowserAction(args.action, {
+      url: args.url,
+      targetDescription: args.targetDescription,
+      direction: args.direction,
+      scrollAmount: args.scrollAmount,
+      text: args.text,
+      mediaAction: args.mediaAction,
+      seconds: args.seconds,
+    });
+    return result;
   }
 
   private async handleWebSearch(query: string) {

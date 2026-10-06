@@ -3,9 +3,11 @@
  * bilingual indicator, latency telemetry, and modal triggers.
  */
 
-import React from 'react';
-import { Settings, Terminal, Brain, Sparkles, Wifi, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Settings, Terminal, Brain, Sparkles, Wifi, ShieldCheck, Globe } from 'lucide-react';
 import { AssistantState, PersonalityMode } from '../types/assistant';
+import { BrowserBridge } from '../browser/BrowserBridge';
+import { ExtensionConnectionStatus } from '../browser/BrowserTypes';
 
 interface StatusIndicatorProps {
   state: AssistantState;
@@ -26,6 +28,15 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   onOpenDebug,
   onOpenProductivity,
 }) => {
+  const [extensionStatus, setExtensionStatus] = useState<ExtensionConnectionStatus>('disconnected');
+
+  useEffect(() => {
+    const bridge = BrowserBridge.getInstance();
+    setExtensionStatus(bridge.getStatus());
+    return bridge.onStatusChange((status) => {
+      setExtensionStatus(status);
+    });
+  }, []);
   return (
     <header className="w-full flex items-center justify-between px-4 sm:px-6 py-4 z-20">
       {/* Brand Identity */}
@@ -79,6 +90,30 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 
       {/* Action Controls */}
       <div className="flex items-center gap-2">
+        {/* Browser Extension Control Indicator */}
+        <button
+          onClick={onOpenSettings}
+          className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono transition-all shadow-sm ${
+            extensionStatus === 'connected'
+              ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-300'
+              : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-slate-700'
+          }`}
+          title={
+            extensionStatus === 'connected'
+              ? 'MJ Browser Extension Connected'
+              : 'MJ Browser Extension: Click for setup instructions'
+          }
+        >
+          <Globe
+            className={`w-3.5 h-3.5 ${
+              extensionStatus === 'connected' ? 'text-emerald-400' : 'text-slate-500'
+            }`}
+          />
+          <span className="hidden lg:inline">
+            {extensionStatus === 'connected' ? 'Browser: Active' : 'Browser: Setup'}
+          </span>
+        </button>
+
         {/* Productivity & Memory button */}
         <button
           onClick={onOpenProductivity}

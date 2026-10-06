@@ -3,9 +3,11 @@
  * Monitors WebSocket status, audio stream metrics, tool calling payloads, and errors.
  */
 
-import React, { useState } from 'react';
-import { X, Terminal, Trash2, Filter, Activity, Wifi, Cpu, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Terminal, Trash2, Filter, Activity, Wifi, Cpu, CheckCircle, Globe } from 'lucide-react';
 import { AssistantState, DebugLogEntry } from '../types/assistant';
+import { BrowserControlManager } from '../browser/BrowserControlManager';
+import { BrowserBridge } from '../browser/BrowserBridge';
 
 interface DebugPanelProps {
   isOpen: boolean;
@@ -25,6 +27,32 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
   onClearLogs,
 }) => {
   const [filter, setFilter] = useState<'all' | 'audio' | 'tool' | 'gemini' | 'error'>('all');
+  const [browserInfo, setBrowserInfo] = useState({
+    extStatus: 'disconnected',
+    taskStatus: 'idle',
+    activeTab: null as any,
+    lastAction: undefined as string | undefined,
+    lastTarget: undefined as any,
+  });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const update = () => {
+      const bcm = BrowserControlManager.getInstance();
+      const bridge = BrowserBridge.getInstance();
+      const ctx = bcm.getContext();
+      setBrowserInfo({
+        extStatus: bcm.getExtensionStatus(),
+        taskStatus: bcm.getTaskStatus(),
+        activeTab: bridge.getActiveTabInfo(),
+        lastAction: ctx.lastAction,
+        lastTarget: ctx.lastTarget,
+      });
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -66,6 +94,47 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
           <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
             <div className="text-slate-500 text-[10px]">AI OUTPUT</div>
             <div className="text-fuchsia-400">24kHz PCM</div>
+          </div>
+        </div>
+
+        {/* Live Browser Control Telemetry */}
+        <div className="px-4 py-3 border-b border-slate-800 bg-slate-900/20 text-[11px]">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-cyan-400 font-bold flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5" />
+              BROWSER CONTROL TELEMETRY
+            </span>
+            <span
+              className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                browserInfo.extStatus === 'connected'
+                  ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60'
+                  : 'bg-slate-800 text-slate-400'
+              }`}
+            >
+              {browserInfo.extStatus}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-400">
+            <div>
+              <span className="text-slate-500">Task Status: </span>
+              <span className="text-slate-200 capitalize">{browserInfo.taskStatus}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Last Action: </span>
+              <span className="text-slate-200">{browserInfo.lastAction || 'None'}</span>
+            </div>
+            <div className="col-span-2 truncate">
+              <span className="text-slate-500">Active Tab: </span>
+              <span className="text-cyan-300">
+                {browserInfo.activeTab?.title || browserInfo.activeTab?.url || 'No tab attached'}
+              </span>
+            </div>
+            {browserInfo.lastTarget && (
+              <div className="col-span-2 truncate">
+                <span className="text-slate-500">Last Target: </span>
+                <span className="text-slate-200">"{browserInfo.lastTarget.text || browserInfo.lastTarget.id}"</span>
+              </div>
+            )}
           </div>
         </div>
 

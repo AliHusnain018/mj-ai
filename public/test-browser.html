@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MJ Browser Automation Test Fixture</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; line-height: 1.6; background: #0f172a; color: #f8fafc; }
+    .card { background: #1e293b; border: 1px solid #334155; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    button { background: #06b6d4; color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 8px; }
+    button:hover { background: #22d3ee; }
+    input, select { background: #0f172a; border: 1px solid #475569; color: #fff; padding: 8px; border-radius: 4px; width: 280px; }
+    .video-item { display: flex; align-items: center; gap: 12px; background: #334155; padding: 12px; border-radius: 6px; margin-bottom: 8px; }
+    .channel-badge { background: #3b82f6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+    .spacer { height: 1200px; background: linear-gradient(180deg, #1e293b, #090d16); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #64748b; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
+    .modal-content { background: #1e293b; padding: 24px; border-radius: 8px; max-width: 400px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>MJ Browser Automation Test Sandbox</h1>
+  <p>This page provides standard HTML elements, mock YouTube-like video feeds, dynamic SPA loading, and scrolling for automated & manual verification.</p>
+
+  <!-- Navigation / Links Section -->
+  <div class="card" id="nav-section">
+    <h2>1. Navigation Links</h2>
+    <a href="#lectures" id="link-lectures">Go to Lectures Section</a> |
+    <a href="#comments" id="link-comments">Go to Comments Section</a> |
+    <button id="btn-toggle-modal" onclick="document.getElementById('test-modal').style.display='flex'">Open Test Modal</button>
+  </div>
+
+  <!-- Search & Inputs Section -->
+  <div class="card" id="search-section">
+    <h2>2. Search & Text Input</h2>
+    <input type="text" id="search" placeholder="Search Python tutorials..." />
+    <button id="btn-search" onclick="performSearch()">Search</button>
+    <div id="search-status" style="margin-top: 8px; color: #38bdf8;"></div>
+  </div>
+
+  <!-- YouTube-Like Video Feed -->
+  <div class="card" id="lectures">
+    <h2>3. Video & Channel Feed</h2>
+    
+    <div class="video-item" data-mj-video="true">
+      <a href="#play-lecture-1" id="video-title" class="video-title" onclick="playMockVideo('Python Lecture 1: Basics')">
+        <h3>Python Lecture 1: Python Full Course for Beginners</h3>
+      </a>
+      <span class="channel-badge" id="channel-name">FreeCodeCamp.org</span>
+    </div>
+
+    <div class="video-item" data-mj-video="true">
+      <a href="#play-lecture-2" class="video-title" onclick="playMockVideo('Python Lecture 2: Data Structures')">
+        <h3>Python Lecture 2: Data Structures & Algorithms</h3>
+      </a>
+      <span class="channel-badge" id="channel-name">FreeCodeCamp.org</span>
+    </div>
+
+    <div class="video-item" data-mj-video="true">
+      <a href="#play-lecture-3" class="video-title" onclick="playMockVideo('Python Lecture 3: Web Scraping')">
+        <h3>Python Lecture 3: Advanced Web Automation</h3>
+      </a>
+      <span class="channel-badge">Tech With Tim</span>
+    </div>
+
+    <div class="video-item" data-mj-channel="true">
+      <a href="#channel-harvard" id="channel-title" onclick="alert('Opened Harvard CS50 Channel')">
+        <h3>Harvard CS50 Official Channel</h3>
+      </a>
+      <span class="channel-badge">Channel</span>
+    </div>
+  </div>
+
+  <!-- Media Player Mock -->
+  <div class="card" id="media-section">
+    <h2>4. Media Controls (HTML5 Video)</h2>
+    <video id="test-video" class="html5-main-video" width="320" height="180" controls style="background:#000; border-radius: 6px;">
+      <source src="" type="video/mp4" />
+    </video>
+    <div style="margin-top: 8px;">
+      <button onclick="document.getElementById('test-video').play()">Play</button>
+      <button onclick="document.getElementById('test-video').pause()">Pause</button>
+      <span id="player-status" style="margin-left: 12px; color: #a78bfa;">Status: Ready</span>
+    </div>
+  </div>
+
+  <!-- Long scrolling region -->
+  <div class="spacer">
+    Scroll Down Region (~1200px)
+  </div>
+
+  <!-- Comments Section at Bottom -->
+  <div class="card" id="comments">
+    <h2>5. Comments Section (Bottom of Page)</h2>
+    <p>User 1: "This lecture was amazing!"</p>
+    <p>User 2: "MJ voice automation is super fast."</p>
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Back to Top</button>
+  </div>
+
+  <!-- Modal Dialog -->
+  <div id="test-modal" class="modal">
+    <div class="modal-content">
+      <h3>Test Modal Dialog</h3>
+      <p>This is a simulated modal or confirmation dialog.</p>
+      <button onclick="document.getElementById('test-modal').style.display='none'">Close Modal</button>
+    </div>
+  </div>
+
+  <script>
+    function performSearch() {
+      const q = document.getElementById('search').value;
+      document.getElementById('search-status').innerText = 'Searched for: "' + q + '" (Found 3 results)';
+    }
+    function playMockVideo(name) {
+      document.getElementById('player-status').innerText = 'Playing: ' + name;
+    }
+  </script>
+</body>
+</html>
